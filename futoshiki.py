@@ -20,12 +20,12 @@ class Grid:
         height = len(lines)
         width = 2 * height - 1
         lines = [line.ljust(width, "1") for line in lines]
-        # turn into a numpy array (of characters)
-        a = np.array([list(line) for line in lines])
+        # turn into a numpy array
+        a = np.array([list(line) for line in lines], dtype=int)
         # slice into values and across/down inequalities
-        values = a[::2, ::4].astype(int)
-        across = a[::2, 2::4].astype(int) - 1
-        down = a[1::2, ::4].astype(int) - 1
+        values = a[::2, ::4]
+        across = a[::2, 2::4] - 1
+        down = a[1::2, ::4] - 1
         return values, across, down
 
     def __str__(self):
