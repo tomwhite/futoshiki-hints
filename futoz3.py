@@ -10,6 +10,9 @@ grid = np.array(
     ]
 )
 
+# TODO
+# create a grid of assertions
+
 
 def apply_row_exclusion_rule(grid, r, c):
     n = grid.shape[0]

@@ -1,5 +1,7 @@
 from z3 import *
 
+#set_param(proof=True)
+
 # x = Int('x')
 # y = Int('y')
 # s = Solver()
@@ -27,6 +29,7 @@ if res == sat:
         print(m.evaluate(X[i]))
 else:
     print("unsat")
+ #   print(s.proof())
 
 # find if there is 0, 1, or more solutions to X[3]
 
