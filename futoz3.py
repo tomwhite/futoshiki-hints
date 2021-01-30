@@ -14,7 +14,7 @@ grid = np.array(
 def apply_row_exclusion_rule(grid, r, c):
     n = grid.shape[0]
     X = [Int(f"x_{i}") for i in range(n)]
-    cells_c = [And(1 <= X[i], X[i] <= n) for i in range(n)]
+    cells_c = [And(1 <= cell, cell <= n) for cell in X]
     rows_c = [Distinct([X[i] for i in range(n)])]
     instance_c = [
         If(int(grid[r, j]) == 0, True, X[j] == int(grid[r, j])) for j in range(n)
@@ -38,7 +38,7 @@ def apply_row_exclusion_rule(grid, r, c):
 def apply_col_exclusion_rule(grid, r, c):
     n = grid.shape[0]
     X = [Int(f"x_{i}") for i in range(n)]
-    cells_c = [And(1 <= X[i], X[i] <= n) for i in range(n)]
+    cells_c = [And(1 <= cell, cell <= n) for cell in X]
     rows_c = [Distinct([X[i] for i in range(n)])]
     instance_c = [
         If(int(grid[i, c]) == 0, True, X[i] == int(grid[i, c])) for i in range(n)
