@@ -78,13 +78,13 @@ def test_solve():
 
 def test_refutation_value():
     rep = """
-·   ·   ·   ·
+4   ·   ·   ·
              
-·   ·   ·   ·
+1   ·   ·   ·
 ^            
 2   ·   ·   ·
     ^        
-·   ·   ·   4
+3   ·   ·   4
 """
     grid = Grid(rep)
     rv = refutation_value(grid)

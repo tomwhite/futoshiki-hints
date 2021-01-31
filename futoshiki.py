@@ -173,8 +173,8 @@ def refutation_value(grid):
     s.add(cells_c + rows_c + cols_c + ineq_c + instance_c)
     # s.assert_and_track(X[3][2] == 2,  'p1')
     # s.assert_and_track(X[0][2] == 3,  'p1')
-    # s.add(X[3][2] == 2)
-    s.add(X[0][2] == 3)
+    #s.add(X[3][1] == 1)
+    s.add(X[3][2] == 2)
     if s.check() == sat:
         m = s.model()
         values = np.empty((n, n), dtype=int)
@@ -186,8 +186,8 @@ def refutation_value(grid):
     else:
         # print(type(s.proof()), dir(s.proof()))
         # print(s.proof().sexpr())
-        core = s.unsat_core()
-        print(len(core))
-        import z3
-        print(z3.Bool('p1') in core)
+        # core = s.unsat_core()
+        # print(len(core))
+        # import z3
+        # print(z3.Bool('p1') in core)
         return len(s.proof().sexpr().splitlines())
