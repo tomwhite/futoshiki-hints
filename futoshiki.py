@@ -71,6 +71,23 @@ class Grid:
         return self.format()
 
 
+class RowAndColumnExclusionRule:
+
+    def apply(self, grid, r, c):
+        all_vals = set(range(1, grid.n + 1))
+        vals = set()
+        for i, row in enumerate(grid.values):
+            for j, val in enumerate(row):
+                if (i == r) != (j == c): # xor
+                    if val != 0:
+                        vals.add(val)
+        if len(vals) == grid.n - 1: # TODO: get from grid
+            val = next(iter(all_vals - vals))
+            return val
+        return None
+
+
+
 def solve(grid):
     n = grid.n
 

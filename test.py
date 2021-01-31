@@ -52,6 +52,24 @@ v   ^
     assert str(Grid(rep)).strip() == rep.strip()
 
 
+def test_rule():
+    rep = """
+3   ·   1   2
+             
+·   ·   2   ·
+             
+·   ·   ·   3
+             
+1   ·   ·   4
+"""
+    grid = Grid(rep)
+    rule = RowAndColumnExclusionRule()
+    assert rule.apply(grid, 1, 1) is None
+    assert rule.apply(grid, 0, 1) == 4
+    assert rule.apply(grid, 2, 2) == 4
+    assert rule.apply(grid, 1, 3) == 1
+
+
 def test_solve():
     rep = """
 ·   ·   ·   ·
