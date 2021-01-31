@@ -5,11 +5,11 @@ from futoshiki import *
 def test_grid():
     rep = """
 · < ·   ·   ·
-        v
+        v    
 1   ·   ·   ·
-        ^  
+        ^    
 ·   ·   ·   ·
-v   ^    
+v   ^        
 ·   ·   ·   ·
 """
     grid = Grid(rep)

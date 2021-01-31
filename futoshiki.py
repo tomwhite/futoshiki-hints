@@ -27,5 +27,41 @@ class Grid:
         down = a[1::2, ::4] - 1
         return values, across, down
 
+    def format(self):
+        def format_value(x):
+            return f"{x}" if x > 0 else "·"
+
+        def format_across(x):
+            if x == -1:
+                return " < "
+            elif x == 1:
+                return " > "
+            else:
+                return "   "
+
+        def format_down(x):
+            if x == -1:
+                return "^   "
+            elif x == 1:
+                return "v   "
+            else:
+                return "    "
+
+        rep = ""
+        for i, row in enumerate(self.values):
+            for j, val in enumerate(row):
+                rep += format_value(val)
+                if j < len(self.values) - 1:
+                    rep += format_across(self.across[i, j])
+            rep += "\n"
+            if i < len(self.values) - 1:
+                for j, _ in enumerate(row):
+                    if j < len(self.values) - 1:
+                        rep += format_down(self.down[i, j])
+                    else:
+                        rep += " "
+                rep += "\n"
+        return rep
+
     def __str__(self):
-        return self.rep
+        return self.format()
