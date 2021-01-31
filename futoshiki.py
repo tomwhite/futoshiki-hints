@@ -1,4 +1,5 @@
 import numpy as np
+from z3 import And, Distinct, Int, Solver, sat
 
 
 class Grid:
@@ -18,7 +19,7 @@ class Grid:
         # make sure each line is the same length
         height = len(lines)
         width = 2 * height - 1
-        lines = [line.ljust(width, "1") for line in lines]
+        lines = [line.ljust(width, "1")[:width] for line in lines]
         # turn into a numpy array
         a = np.array([list(line) for line in lines], dtype=int)
         # slice into values and across/down inequalities
@@ -65,3 +66,59 @@ class Grid:
 
     def __str__(self):
         return self.format()
+
+
+def solve(grid):
+    n = 4  # TODO: get from grid
+
+    # a variable for each cell
+    X = [[Int("x_%s_%s" % (i + 1, j + 1)) for j in range(n)] for i in range(n)]
+
+    # each cell contains a value in {1, ..., n}
+    cells_c = [And(1 <= X[i][j], X[i][j] <= n) for i in range(n) for j in range(n)]
+
+    # each row contains distinct values
+    rows_c = [Distinct(X[i]) for i in range(n)]
+
+    # each column contains distinct values
+    cols_c = [Distinct([X[i][j] for i in range(n)]) for j in range(n)]
+
+    # add constraints for inequalities
+    ineq_c = []
+    for i, row in enumerate(grid.values):
+        for j, _ in enumerate(row):
+            if j < n - 1:
+                ineq = grid.across[i, j]
+                if ineq == -1:
+                    ineq_c.append(X[i][j] < X[i][j + 1])
+                elif ineq == 1:
+                    ineq_c.append(X[i][j] > X[i][j + 1])
+        if i < n - 1:
+            for j, _ in enumerate(row):
+                ineq = grid.down[i, j]
+                if ineq == -1:
+                    ineq_c.append(X[i][j] < X[i + 1][j])
+                elif ineq == 1:
+                    ineq_c.append(X[i][j] > X[i + 1][j])
+
+    # add constraints for any values provided
+    instance_c = [
+        X[i][j] == int(grid.values[i, j])
+        for i in range(n)
+        for j in range(n)
+        if grid.values[i, j] != 0
+    ]
+
+    # solve
+    s = Solver()
+    s.add(cells_c + rows_c + cols_c + ineq_c + instance_c)
+    if s.check() == sat:
+        m = s.model()
+        values = np.empty((n, n), dtype=int)
+        for i in range(n):
+            for j in range(n):
+                values[i, j] = m.evaluate(X[i][j]).as_long()
+        # TODO: return grid
+        return values
+    else:
+        return None
