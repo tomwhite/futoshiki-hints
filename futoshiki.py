@@ -6,14 +6,13 @@ class Grid:
 
     def __init__(self, rep):
         self.rep = rep
-        self.values, self.across, self.down = Grid.parse(rep)
+        self.values, self.across, self.down = self.parse()
 
-    @staticmethod
-    def parse(rep):
+    def parse(self):
         # encode characters as ints
         # note that inequalities have one subtracted later, hence space is 1 here
         table = str.maketrans("· <>^v", "010202")
-        rep = rep.translate(table)
+        rep = self.rep.translate(table)
         # split into lines
         lines = rep.strip().splitlines()
         # make sure each line is the same length
