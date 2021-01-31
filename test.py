@@ -74,3 +74,18 @@ def test_solve():
             ]
         ),
     )
+
+
+def test_refutation_value():
+    rep = """
+·   ·   ·   ·
+             
+·   ·   ·   ·
+^            
+2   ·   ·   ·
+    ^        
+·   ·   ·   4
+"""
+    grid = Grid(rep)
+    rv = refutation_value(grid)
+    print(rv)
