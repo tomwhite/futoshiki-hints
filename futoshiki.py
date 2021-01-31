@@ -71,7 +71,20 @@ class Grid:
         return self.format()
 
 
-class RowAndColumnExclusionRule:
+class Rule:
+
+    def possible_values(self, grid, r, c):
+        pass
+
+    def apply(self, grid, r, c):
+        vals = self.possible_values(grid, r, c)
+        if len(vals) == 1:
+            val = next(iter(vals))
+            return val
+        return None
+
+
+class RowAndColumnExclusionRule(Rule):
 
     def possible_values(self, grid, r, c):
         vals = set(range(1, grid.n + 1))
@@ -83,12 +96,12 @@ class RowAndColumnExclusionRule:
         return vals
 
 
-    def apply(self, grid, r, c):
-        vals = self.possible_values(grid, r, c)
-        if len(vals) == 1:
-            val = next(iter(vals))
-            return val
-        return None
+class MinExclusionRule:
+
+    def possible_values(self, grid, r, c):
+        vals = set(range(1, grid.n + 1))
+        # TODO: iterate over less than and find any where it's 2
+        return vals
 
 
 def solve(grid):
