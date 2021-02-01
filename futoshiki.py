@@ -1,5 +1,5 @@
 import numpy as np
-from z3 import And, Distinct, Int, Solver, sat, set_param
+from z3 import And, Distinct, Int, Solver, sat, set_param, unsat
 
 set_param(proof=True)
 
@@ -126,7 +126,7 @@ def solve(grid):
         return None
 
 
-def refutation_value(grid):
+def refutation_value(grid, r, c):
     n = 4  # TODO: get from grid
 
     # a variable for each cell
@@ -174,20 +174,13 @@ def refutation_value(grid):
     # s.assert_and_track(X[3][2] == 2,  'p1')
     # s.assert_and_track(X[0][2] == 3,  'p1')
     #s.add(X[3][1] == 1)
-    s.add(X[3][2] == 2)
-    if s.check() == sat:
-        m = s.model()
-        values = np.empty((n, n), dtype=int)
-        for i in range(n):
-            for j in range(n):
-                values[i, j] = m.evaluate(X[i][j]).as_long()
-        # TODO: return grid
-        return values
-    else:
-        # print(type(s.proof()), dir(s.proof()))
-        # print(s.proof().sexpr())
-        # core = s.unsat_core()
-        # print(len(core))
-        # import z3
-        # print(z3.Bool('p1') in core)
-        return len(s.proof().sexpr().splitlines())
+
+    score = 0
+
+    for v in range(1, n + 1):
+        s.push()
+        s.add(X[r][c] == v)
+        if s.check() == unsat:
+            score += len(s.proof().sexpr().splitlines())
+        s.pop()
+    return score

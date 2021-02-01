@@ -76,6 +76,33 @@ def test_solve():
     )
 
 
+def test_refutation_value_simple():
+    rep = """
+·   ·   ·   ·
+             
+·   ·   ·   ·
+^            
+2   ·   ·   ·
+    ^        
+·   ·   ·   4
+"""
+    grid = Grid(rep)
+    score = refutation_value(grid, 1, 3)
+    print(score)
+    score = refutation_value(grid, 1, 0)
+    print(score)
+
+    min_score = 10000
+    minr, minc = -1, -1
+    for r in range(0, 4):
+        for c in range(0, 4):
+            if grid.values[r, c] == 0:
+                score = refutation_value(grid, r, c)
+                if score < min_score:
+                    min_score = score
+                    minr, minc = r, c
+    print(minr, minc)
+
 def test_refutation_value():
     rep = """
 4   ·   ·   ·
@@ -87,5 +114,7 @@ def test_refutation_value():
 3   ·   ·   4
 """
     grid = Grid(rep)
-    rv = refutation_value(grid)
-    print(rv)
+    score = refutation_value(grid, 3, 1)
+    print(score)
+    score = refutation_value(grid, 3, 2)
+    print(score)
