@@ -115,3 +115,20 @@ def test_refutation_value():
     r, c = np.unravel_index(masked_scores.argmin(), scores.shape)
 
     print(r, c)
+
+def test_refutation_scores_5():
+    rep = """
+· < ·   ·   · > ·
+    ^       v    
+·   · < ·   ·   ·
+    ^        
+· < ·   ·   ·   ·
+^               v
+·   · < ·   ·   ·
+^       ^        
+· < ·   · > · > ·
+"""
+    grid = Grid(rep)
+    print(grid)
+    scores = refutation_scores(grid)
+    print(scores)
