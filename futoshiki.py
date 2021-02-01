@@ -189,3 +189,8 @@ def refutation_scores(grid):
                     scores[r, c] += len(s.proof().sexpr().splitlines())
                 s.pop()
     return scores
+
+def best_move(grid, scores):
+    masked_scores = np.ma.masked_equal(scores, 0, copy=False)
+    r, c = np.unravel_index(masked_scores.argmin(), scores.shape)
+    return r, c

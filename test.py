@@ -78,6 +78,8 @@ def test_solve():
 
 
 def test_refutation_scores():
+    # from https://krazydad.com/tablet/futoshiki/?kind=4x4&volumeNumber=1&bookNumber=1&puzzleNumber=3
+
     rep = """
 ·   ·   ·   ·
              
@@ -89,15 +91,40 @@ def test_refutation_scores():
 """
     grid = Grid(rep)
     scores = refutation_scores(grid)
+    r, c = best_move(grid, scores)
+    assert r == 1
+    assert c == 0
 
-    # find minimum
-    masked_scores = np.ma.masked_equal(scores, 0, copy=False)
-    r, c = np.unravel_index(masked_scores.argmin(), scores.shape)
+    rep = """
+·   ·   ·   ·
+             
+1   ·   ·   ·
+^            
+2   ·   ·   ·
+    ^        
+·   ·   ·   4
+"""
+    grid = Grid(rep)
+    scores = refutation_scores(grid)
+    r, c = best_move(grid, scores)
+    assert r == 3
+    assert c == 0
 
-    assert r, c == (1, 0)
+    rep = """
+·   ·   ·   ·
+             
+1   ·   ·   ·
+^            
+2   ·   ·   ·
+    ^        
+3   ·   ·   4
+"""
+    grid = Grid(rep)
+    scores = refutation_scores(grid)
+    r, c = best_move(grid, scores)
+    assert r == 0
+    assert c == 0
 
-
-def test_refutation_value():
     rep = """
 4   ·   ·   ·
              
@@ -109,14 +136,12 @@ def test_refutation_value():
 """
     grid = Grid(rep)
     scores = refutation_scores(grid)
+    r, c = best_move(grid, scores)
+    assert r == 3
+    assert c == 1
 
-    # find minimum
-    masked_scores = np.ma.masked_equal(scores, 0, copy=False)
-    r, c = np.unravel_index(masked_scores.argmin(), scores.shape)
 
-    print(r, c)
-
-def test_refutation_scores_5():
+def test_refutation_scores_guardian_2021_01_16():
     rep = """
 · < ·   ·   · > ·
     ^       v    
@@ -129,6 +154,6 @@ def test_refutation_scores_5():
 · < ·   · > · > ·
 """
     grid = Grid(rep)
-    print(grid)
     scores = refutation_scores(grid)
+    # I think 0,0 is easiest, not 1,1 - but still helpful
     print(scores)
