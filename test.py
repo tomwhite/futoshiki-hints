@@ -90,8 +90,7 @@ def test_refutation_scores():
 ·   ·   ·   4
 """
     grid = Grid(rep)
-    scores = refutation_scores(grid)
-    r, c = best_move(grid, scores)
+    r, c = hint(grid)
     assert r == 1
     assert c == 0
 
@@ -105,8 +104,8 @@ def test_refutation_scores():
 ·   ·   ·   4
 """
     grid = Grid(rep)
-    scores = refutation_scores(grid)
-    r, c = best_move(grid, scores)
+    r, c = hint(grid)
+    print(refutation_scores(grid))
     assert r == 3
     assert c == 0
 
@@ -120,8 +119,7 @@ def test_refutation_scores():
 3   ·   ·   4
 """
     grid = Grid(rep)
-    scores = refutation_scores(grid)
-    r, c = best_move(grid, scores)
+    r, c = hint(grid)
     assert r == 0
     assert c == 0
 
@@ -135,8 +133,7 @@ def test_refutation_scores():
 3   ·   ·   4
 """
     grid = Grid(rep)
-    scores = refutation_scores(grid)
-    r, c = best_move(grid, scores)
+    r, c = hint(grid)
     assert r == 3
     assert c == 1
 
@@ -157,3 +154,18 @@ def test_refutation_scores_guardian_2021_01_16():
     scores = refutation_scores(grid)
     # I think 0,0 is easiest, not 1,1 - but still helpful
     print(scores)
+
+def test_play():
+    rep = """
+·   1   ·   ·
+^           ^
+·   ·   ·   ·
+v            
+·   ·   ·   ·
+            ^
+·   ·   ·   ·
+"""
+    grid = Grid(rep)
+    print(solve(grid))
+    print(refutation_scores(grid))
+    # play(grid)

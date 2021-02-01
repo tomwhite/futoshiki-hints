@@ -63,7 +63,7 @@ class Grid:
                     if j < len(self.values) - 1:
                         rep += format_down(self.down[i, j])
                     else:
-                        rep += " "
+                        rep += format_down(self.down[i, j])[0]
                 rep += "\n"
         return rep
 
@@ -168,16 +168,12 @@ def refutation_scores(grid):
         if grid.values[i, j] != 0
     ]
 
-    # solve
+    # calculate scores
     s = Solver()
     s.set(unsat_core=True)
     s.add(cells_c + rows_c + cols_c + ineq_c + instance_c)
-    # s.assert_and_track(X[3][2] == 2,  'p1')
-    # s.assert_and_track(X[0][2] == 3,  'p1')
-    #s.add(X[3][1] == 1)
 
     scores = np.zeros((n, n), dtype=int)
-
     for r in range(0, n):
         for c in range(0, n):
             if grid.values[r, c] != 0:
@@ -190,7 +186,20 @@ def refutation_scores(grid):
                 s.pop()
     return scores
 
-def best_move(grid, scores):
+def hint(grid):
+    scores = refutation_scores(grid)
     masked_scores = np.ma.masked_equal(scores, 0, copy=False)
     r, c = np.unravel_index(masked_scores.argmin(), scores.shape)
     return r, c
+
+def play(grid, n_moves=5):
+    print("Start:")
+    print(grid)
+    print()
+    for i in range(1, n_moves + 1):
+        r, c = hint(grid)
+        v = solve(grid)[r, c]
+        grid.values[r, c] = v
+        print(f"Move {i}:")
+        print(grid)
+        print()
