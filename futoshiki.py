@@ -10,6 +10,7 @@ class Grid:
     def __init__(self, rep):
         self.rep = rep
         self.values, self.across, self.down = self.parse()
+        self.n = self.values.shape[0]
 
     def parse(self):
         # encode characters as ints
@@ -71,7 +72,7 @@ class Grid:
 
 
 def solve(grid):
-    n = 4  # TODO: get from grid
+    n = grid.n
 
     # a variable for each cell
     X = [[Int("x_%s_%s" % (i + 1, j + 1)) for j in range(n)] for i in range(n)]
@@ -127,7 +128,7 @@ def solve(grid):
 
 
 def refutation_scores(grid):
-    n = 4  # TODO: get from grid
+    n = grid.n
 
     # a variable for each cell
     X = [[Int("x_%s_%s" % (i + 1, j + 1)) for j in range(n)] for i in range(n)]
