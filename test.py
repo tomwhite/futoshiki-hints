@@ -1,3 +1,4 @@
+import numpy as np
 from numpy.testing import assert_array_equal
 from futoshiki import *
 
@@ -76,7 +77,7 @@ def test_solve():
     )
 
 
-def test_refutation_value_simple():
+def test_refutation_scores():
     rep = """
 ·   ·   ·   ·
              
@@ -87,21 +88,14 @@ def test_refutation_value_simple():
 ·   ·   ·   4
 """
     grid = Grid(rep)
-    score = refutation_value(grid, 1, 3)
-    print(score)
-    score = refutation_value(grid, 1, 0)
-    print(score)
+    scores = refutation_scores(grid)
 
-    min_score = 10000
-    minr, minc = -1, -1
-    for r in range(0, 4):
-        for c in range(0, 4):
-            if grid.values[r, c] == 0:
-                score = refutation_value(grid, r, c)
-                if score < min_score:
-                    min_score = score
-                    minr, minc = r, c
-    print(minr, minc)
+    # find minimum
+    masked_scores = np.ma.masked_equal(scores, 0, copy=False)
+    r, c = np.unravel_index(masked_scores.argmin(), scores.shape)
+
+    assert r, c == (1, 0)
+
 
 def test_refutation_value():
     rep = """
@@ -114,7 +108,10 @@ def test_refutation_value():
 3   ·   ·   4
 """
     grid = Grid(rep)
-    score = refutation_value(grid, 3, 1)
-    print(score)
-    score = refutation_value(grid, 3, 2)
-    print(score)
+    scores = refutation_scores(grid)
+
+    # find minimum
+    masked_scores = np.ma.masked_equal(scores, 0, copy=False)
+    r, c = np.unravel_index(masked_scores.argmin(), scores.shape)
+
+    print(r, c)

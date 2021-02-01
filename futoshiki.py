@@ -126,7 +126,7 @@ def solve(grid):
         return None
 
 
-def refutation_value(grid, r, c):
+def refutation_scores(grid):
     n = 4  # TODO: get from grid
 
     # a variable for each cell
@@ -175,12 +175,16 @@ def refutation_value(grid, r, c):
     # s.assert_and_track(X[0][2] == 3,  'p1')
     #s.add(X[3][1] == 1)
 
-    score = 0
+    scores = np.zeros((n, n), dtype=int)
 
-    for v in range(1, n + 1):
-        s.push()
-        s.add(X[r][c] == v)
-        if s.check() == unsat:
-            score += len(s.proof().sexpr().splitlines())
-        s.pop()
-    return score
+    for r in range(0, n):
+        for c in range(0, n):
+            if grid.values[r, c] != 0:
+                continue
+            for v in range(1, n + 1):
+                s.push()
+                s.add(X[r][c] == v)
+                if s.check() == unsat:
+                    scores[r, c] += len(s.proof().sexpr().splitlines())
+                s.pop()
+    return scores
