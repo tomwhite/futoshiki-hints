@@ -7,9 +7,14 @@ set_param(proof=True)
 class Grid:
     """A Futoshiki grid."""
 
-    def __init__(self, rep):
-        self.rep = rep
-        self.values, self.across, self.down = self.parse()
+    def __init__(self, rep=None, values=None, across=None, down=None):
+        if rep is not None:
+            self.rep = rep
+            self.values, self.across, self.down = self.parse()
+        else:
+            self.values = values
+            self.across = across
+            self.down = down
         self.n = self.values.shape[0]
 
     def parse(self):
@@ -139,6 +144,9 @@ class MinExclusionRule:
         # TODO: iterate over less than and find any where it's 2
         return vals
 
+
+def is_consistent(grid):
+    return solve(grid) is not None
 
 def solve(grid):
     n = grid.n

@@ -51,6 +51,37 @@ v   ^
 
     assert str(Grid(rep)).strip() == rep.strip()
 
+def test_is_consistent():
+    assert is_consistent(Grid("""
+·   ·
+     
+3   ·
+""")) == False
+
+    assert is_consistent(Grid("""
+1   1
+     
+·   ·
+""")) == False
+
+    assert is_consistent(Grid("""
+1   ·
+     
+1   ·
+""")) == False
+
+    assert is_consistent(Grid("""
+1 > 2
+     
+·   ·
+""")) == False
+
+    assert is_consistent(Grid("""
+1 > ·
+v    
+2   ·
+""")) == False
+
 
 def test_rule():
     rep = """
