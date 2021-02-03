@@ -96,9 +96,9 @@ def test_rule():
     grid = Grid(rep)
     rule = RowAndColumnExclusionRule()
     assert rule.apply(grid, 1, 1) is None
-    assert rule.apply(grid, 0, 1) == 4
-    assert rule.apply(grid, 2, 2) == 4
-    assert rule.apply(grid, 1, 3) == 1
+    assert rule.apply(grid, 0, 1) == (4, 0, 1)
+    assert rule.apply(grid, 2, 2) == (4, 2, 2)
+    assert rule.apply(grid, 1, 3) == (1, 1, 3)
 
 
 def test_solve():

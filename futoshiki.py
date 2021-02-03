@@ -76,10 +76,8 @@ class Grid:
         return self.format()
 
 
-class Rule:
-
-    def possible_values(self, grid, r, c):
-        pass
+class RowAndColumnExclusionRule:
+    """For a given cell there is only one value that can go into the cell."""
 
     def apply(self, grid, r=None, c=None):
         if r is None:
@@ -95,14 +93,14 @@ class Rule:
                 vals = self.possible_values(grid, r, c)
                 if len(vals) == 1:
                     val = next(iter(vals))
-                    return val
-                return None
-
-
-class RowAndColumnExclusionRule(Rule):
+                    return val, r, c
+        return None
 
     def possible_values(self, grid, r, c):
         vals = set(range(1, grid.n + 1))
+        for val in vals:
+            # if adding val to r, c does not produce an inconsistency, add val as possible
+            pass
         for i, row in enumerate(grid.values):
             for j, val in enumerate(row):
                 if (i == r) != (j == c): # xor
@@ -111,7 +109,8 @@ class RowAndColumnExclusionRule(Rule):
         return vals
 
 
-class RowOrColumnInclusionRule(Rule):
+class RowOrColumnInclusionRule:
+    """For a given row or column there exists only one cell which can contain a given value."""
 
     def possible_cells(self, grid, val, r=None, c=None):
         # TODO: check max of one of r or c is specified
@@ -134,15 +133,8 @@ class RowOrColumnInclusionRule(Rule):
                 cells = self.possible_cells(grid, r)
                 if len(cells) == 1:
                     # val has to go in r, c
-                    pass
-
-
-class MinExclusionRule:
-
-    def possible_values(self, grid, r, c):
-        vals = set(range(1, grid.n + 1))
-        # TODO: iterate over less than and find any where it's 2
-        return vals
+                    return val, r, c
+        return None
 
 
 def is_consistent(grid):
