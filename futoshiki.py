@@ -76,12 +76,22 @@ class Rule:
     def possible_values(self, grid, r, c):
         pass
 
-    def apply(self, grid, r, c):
-        vals = self.possible_values(grid, r, c)
-        if len(vals) == 1:
-            val = next(iter(vals))
-            return val
-        return None
+    def apply(self, grid, r=None, c=None):
+        if r is None:
+            r_range = range(grid.n)
+        else:
+            r_range = range(r, r + 1)
+        if c is None:
+            c_range = range(grid.n)
+        else:
+            c_range = range(c, c + 1)
+        for r in r_range:
+            for c in c_range:
+                vals = self.possible_values(grid, r, c)
+                if len(vals) == 1:
+                    val = next(iter(vals))
+                    return val
+                return None
 
 
 class RowAndColumnExclusionRule(Rule):
