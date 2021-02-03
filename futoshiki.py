@@ -106,6 +106,32 @@ class RowAndColumnExclusionRule(Rule):
         return vals
 
 
+class RowOrColumnInclusionRule(Rule):
+
+    def possible_cells(self, grid, val, r=None, c=None):
+        # TODO: check max of one of r or c is specified
+        cells = []
+        if r is not None:
+            for c in range(grid.n):
+                pass
+                # if adding val to r, c does not produce an inconsistency, add (r, c) to cells
+
+        if c is not None:
+            for r in range(grid.n):
+                pass
+                # if adding val to r, c does not produce an inconsistency, add (r, c) to cells
+        return cells
+
+    def apply(self, grid, r=None, c=None):
+        # TODO: check max of one of r or c is specified
+        if r is not None:
+            for val in range(1, grid.n + 1):
+                cells = self.possible_cells(grid, r)
+                if len(cells) == 1:
+                    # val has to go in r, c
+                    pass
+
+
 class MinExclusionRule:
 
     def possible_values(self, grid, r, c):
