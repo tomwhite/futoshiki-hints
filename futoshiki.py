@@ -75,6 +75,11 @@ class Grid:
     def __str__(self):
         return self.format()
 
+    def set(self, r, c, val):
+        values = self.values.copy()
+        values[r, c] = val
+        return Grid(values=values, across=self.across, down=self.down)
+
 
 class RowAndColumnExclusionRule:
     """For a given cell there is only one value that can go into the cell."""
