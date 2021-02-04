@@ -53,6 +53,12 @@ v   ^
 
 def test_is_consistent():
     assert is_consistent(Grid("""
+1   ·
+     
+·   ·
+""")) == True
+
+    assert is_consistent(Grid("""
 ·   ·
      
 3   ·
@@ -77,10 +83,19 @@ def test_is_consistent():
 """)) == False
 
     assert is_consistent(Grid("""
-1 > ·
+1   ·
 v    
 2   ·
 """)) == False
+
+    # note this is consistent, even though it doesn't give a solution
+    assert is_consistent(Grid("""
+3   ·   1
+         
+·   1   2
+         
+·   ·   ·
+""")) == True
 
 
 def test_rule():
