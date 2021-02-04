@@ -103,6 +103,7 @@ class RowAndColumnExclusionRule:
                 vals = self.possible_values(grid, r, c)
                 if len(vals) == 1:
                     val = next(iter(vals))
+                    # What is the only value that can go in (r, c)?
                     return r, c, val
         return None
 
@@ -139,7 +140,8 @@ class RowInclusionRule:
                 cells = self.possible_cells(grid, val, r=r)
                 if len(cells) == 1:
                     r, c = cells[0]
-                    # val has to go in r, c
+                    # Which cell in row r does one number have to go?
+                    # Where in row r does the number val have to go?
                     return r, c, val
         return None
 
@@ -169,7 +171,8 @@ class ColumnInclusionRule:
                 cells = self.possible_cells(grid, val, c=c)
                 if len(cells) == 1:
                     r, c = cells[0]
-                    # val has to go in r, c
+                    # Which cell in column c does one number have to go?
+                    # Where in column c does the number val have to go?
                     return r, c, val
         return None
 
@@ -185,6 +188,7 @@ class MinimumRefutationScoreRule:
         scores = refutation_scores(grid)
         masked_scores = np.ma.masked_equal(scores, 0, copy=False)
         r, c = np.unravel_index(masked_scores.argmin(), scores.shape)
+        # Can you show that all numbers except one for (r, c) are impossible?
         return r, c, None  # TODO: fill in value
 
 
