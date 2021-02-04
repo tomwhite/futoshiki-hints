@@ -341,12 +341,30 @@ def test_hint_inclusion_guardian_2021_01_16():
 · < ·   · > · > ·
 """
     grid = Grid(rep)
-    print(solve(grid))
     r, c, name = hint(grid)
-    print(r, c, name)
     assert r == 3
     assert c == 3
     assert name == "inclusion"
+
+
+def test_hint_inclusion_iterating_possibilities():
+    # from https://www.futoshiki.org/how-to-solve
+    rep = """
+·   ·   4   ·
+v            
+·   4 > ·   ·
+             
+·   · < · < 4
+             
+4   ·   · < 3
+"""
+    grid = Grid(rep)
+    r, c, name = hint(grid)
+    assert r == 0
+    assert c == 1
+    assert name == "inclusion"
+    
+    print(refutation_scores(grid))
 
 
 def test_play():
