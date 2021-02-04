@@ -108,7 +108,7 @@ class RowAndColumnExclusionRule:
             pass
         for i, row in enumerate(grid.values):
             for j, val in enumerate(row):
-                if (i == r) != (j == c): # xor
+                if (i == r) != (j == c):  # xor
                     if val != 0:
                         vals.discard(val)
         return vals
@@ -143,7 +143,71 @@ class RowOrColumnInclusionRule:
 
 
 def is_consistent(grid):
-    return solve(grid) is not None
+    n = grid.n
+
+    # a variable for each cell (those undefined will not be used below)
+    X = [[Int("x_%s_%s" % (i + 1, j + 1)) for j in range(n)] for i in range(n)]
+
+    # each (defined) cell contains a value in {1, ..., n}
+    cells_c = [
+        And(1 <= X[i][j], X[i][j] <= n)
+        for i in range(n)
+        for j in range(n)
+        if grid.values[i, j] != 0
+    ]
+
+    # each row contains distinct values (for defined cells)
+    rows_c = []
+    for i in range(n):
+        v = []
+        for j in range(n):
+            if grid.values[i, j] != 0:
+                v.append(X[i][j])
+        if len(v) > 0:
+            rows_c.append(Distinct(v))
+
+    # each column contains distinct values (for defined cells)
+    cols_c = []
+    for j in range(n):
+        v = []
+        for i in range(n):
+            if grid.values[i, j] != 0:
+                v.append(X[i][j])
+        if len(v) > 0:
+            cols_c.append(Distinct(v))
+
+    # add constraints for inequalities (where both cells are defined)
+    ineq_c = []
+    for i, row in enumerate(grid.values):
+        for j, _ in enumerate(row):
+            if j < n - 1 and grid.values[i][j] != 0 and grid.values[i][j + 1] != 0:
+                ineq = grid.across[i, j]
+                if ineq == -1:
+                    ineq_c.append(X[i][j] < X[i][j + 1])
+                elif ineq == 1:
+                    ineq_c.append(X[i][j] > X[i][j + 1])
+        if i < n - 1:
+            for j, _ in enumerate(row):
+                if grid.values[i][j] != 0 and grid.values[i + 1][j] != 0:
+                    ineq = grid.down[i, j]
+                    if ineq == -1:
+                        ineq_c.append(X[i][j] < X[i + 1][j])
+                    elif ineq == 1:
+                        ineq_c.append(X[i][j] > X[i + 1][j])
+
+    # each cell has the value provided
+    instance_c = [
+        X[i][j] == int(grid.values[i, j])
+        for i in range(n)
+        for j in range(n)
+        if grid.values[i, j] != 0
+    ]
+
+    # solve
+    s = Solver()
+    s.add(cells_c + rows_c + cols_c + ineq_c + instance_c)
+    return s.check() == sat
+
 
 def solve(grid):
     n = grid.n
@@ -260,11 +324,13 @@ def refutation_scores(grid):
                 s.pop()
     return scores
 
+
 def hint(grid):
     scores = refutation_scores(grid)
     masked_scores = np.ma.masked_equal(scores, 0, copy=False)
     r, c = np.unravel_index(masked_scores.argmin(), scores.shape)
     return r, c
+
 
 def play(grid, n_moves=5):
     print("Start:")
