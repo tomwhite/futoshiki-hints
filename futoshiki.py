@@ -119,23 +119,28 @@ class RowOrColumnInclusionRule:
         cells = []
         if r is not None:
             for c in range(grid.n):
-                pass
-                # if adding val to r, c does not produce an inconsistency, add (r, c) to cells
-
-        if c is not None:
+                if grid.values[r, c] != 0:
+                    continue
+                if is_consistent(grid.set(r, c, val)):
+                    cells.append((r, c))
+        elif c is not None:
             for r in range(grid.n):
-                pass
-                # if adding val to r, c does not produce an inconsistency, add (r, c) to cells
+                if grid.values[r, c] != 0:
+                    continue
+                if is_consistent(grid.set(r, c, val)):
+                    cells.append((r, c))
         return cells
 
     def apply(self, grid, r=None, c=None):
         # TODO: check max of one of r or c is specified
         if r is not None:
             for val in range(1, grid.n + 1):
-                cells = self.possible_cells(grid, r)
+                cells = self.possible_cells(grid, val, r)
                 if len(cells) == 1:
+                    r, c = cells[0]
                     # val has to go in r, c
-                    return val, r, c
+                    return r, c, val
+        # TODO: column
         return None
 
 
@@ -173,24 +178,34 @@ def is_consistent(grid):
         if len(v) > 0:
             cols_c.append(Distinct(v))
 
-    # add constraints for inequalities (where both cells are defined)
+    # a variable for undefined cells that are only used for inequalities
+    # this is for checking consistency of "1 > *" for example
+    U = [[Int("u_%s_%s" % (i + 1, j + 1)) for j in range(n)] for i in range(n)]
+    undefined_c = []
+
+    def get(i, j):
+        if grid.values[i][j] != 0:
+            return X[i][j]
+        undefined_c.append(And(1 <= U[i][j], U[i][j] <= n))
+        return U[i][j]
+
+    # add constraints for inequalities
     ineq_c = []
     for i, row in enumerate(grid.values):
         for j, _ in enumerate(row):
-            if j < n - 1 and grid.values[i][j] != 0 and grid.values[i][j + 1] != 0:
+            if j < n - 1:
                 ineq = grid.across[i, j]
                 if ineq == -1:
-                    ineq_c.append(X[i][j] < X[i][j + 1])
+                    ineq_c.append(get(i, j) < get(i, j + 1))
                 elif ineq == 1:
-                    ineq_c.append(X[i][j] > X[i][j + 1])
+                    ineq_c.append(get(i, j) > get(i, j + 1))
         if i < n - 1:
             for j, _ in enumerate(row):
-                if grid.values[i][j] != 0 and grid.values[i + 1][j] != 0:
-                    ineq = grid.down[i, j]
-                    if ineq == -1:
-                        ineq_c.append(X[i][j] < X[i + 1][j])
-                    elif ineq == 1:
-                        ineq_c.append(X[i][j] > X[i + 1][j])
+                ineq = grid.down[i, j]
+                if ineq == -1:
+                    ineq_c.append(get(i, j) < get(i + 1, j))
+                elif ineq == 1:
+                    ineq_c.append(get(i, j) > get(i + 1, j))
 
     # each cell has the value provided
     instance_c = [
@@ -202,7 +217,7 @@ def is_consistent(grid):
 
     # solve
     s = Solver()
-    s.add(cells_c + rows_c + cols_c + ineq_c + instance_c)
+    s.add(cells_c + rows_c + cols_c + ineq_c + instance_c + undefined_c)
     return s.check() == sat
 
 

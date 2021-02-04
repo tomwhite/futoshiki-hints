@@ -97,8 +97,14 @@ v
 ·   ·   ·
 """)) == True
 
+    assert is_consistent(Grid("""
+1 > ·
+     
+·   ·
+""")) == False
 
-def test_rule():
+
+def test_exclusion_rule():
     rep = """
 3   ·   1   2
              
@@ -114,6 +120,22 @@ def test_rule():
     assert rule.apply(grid, 0, 1) == (0, 1, 4)
     assert rule.apply(grid, 2, 2) == (2, 2, 4)
     assert rule.apply(grid, 1, 3) == (1, 3, 1)
+
+
+def test_inclusion_rule():
+    # from https://www.futoshiki.org/how-to-solve
+    rep = """
+3   ·   · > ·
+    v        
+·   ·   3   ·
+             
+·   ·   ·   ·
+        ^    
+· > ·   ·   ·
+"""
+    grid = Grid(rep)
+    rule = RowOrColumnInclusionRule()
+    assert rule.apply(grid, r=0) == (0, 3, 1)
 
 
 def test_solve():
