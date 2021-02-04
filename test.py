@@ -363,7 +363,7 @@ v
     assert r == 0
     assert c == 1
     assert name == "column inclusion"
-    
+
     print(refutation_scores(grid))
 
 

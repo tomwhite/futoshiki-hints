@@ -174,6 +174,20 @@ class ColumnInclusionRule:
         return None
 
 
+class MinimumRefutationScoreRule:
+    """Find a cell that requires the fewest number of simple steps to demonstrate
+    the inconsistency of each wrong candidate value."""
+
+    def __init__(self):
+        self.name = "refutation"
+
+    def apply(self, grid):
+        scores = refutation_scores(grid)
+        masked_scores = np.ma.masked_equal(scores, 0, copy=False)
+        r, c = np.unravel_index(masked_scores.argmin(), scores.shape)
+        return r, c, None  # TODO: fill in value
+
+
 def is_consistent(grid):
     n = grid.n
 
@@ -368,19 +382,18 @@ def refutation_scores(grid):
 
 
 def hint(grid):
-    # try simple rules first
-    rules = (RowAndColumnExclusionRule(), RowInclusionRule(), ColumnInclusionRule())
+    rules = (
+        RowAndColumnExclusionRule(),
+        RowInclusionRule(),
+        ColumnInclusionRule(),
+        MinimumRefutationScoreRule(),
+    )
     for rule in rules:
+        # TODO: return text suggestion
         res = rule.apply(grid)
         if res is not None:
             r, c, _ = res
             return r, c, rule.name
-
-    # then try refutation scores
-    scores = refutation_scores(grid)
-    masked_scores = np.ma.masked_equal(scores, 0, copy=False)
-    r, c = np.unravel_index(masked_scores.argmin(), scores.shape)
-    return r, c, "refutation"
 
 
 def play(grid, n_moves=5):
