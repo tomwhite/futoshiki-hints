@@ -204,7 +204,7 @@ def test_inclusion_rule():
 · > ·   ·   ·
 """
     grid = Grid(rep)
-    rule = RowOrColumnInclusionRule()
+    rule = RowInclusionRule()
     assert rule.apply(grid, r=0) == (0, 3, 1)
 
     rep = """
@@ -217,7 +217,7 @@ v
 ·   ·   ·   ·
 """
     grid = Grid(rep)
-    rule = RowOrColumnInclusionRule()
+    rule = ColumnInclusionRule()
     assert rule.apply(grid, c=0) == (3, 0, 1)
 
 
@@ -325,7 +325,7 @@ def test_hint_inclusion():
     r, c, name = hint(grid)
     assert r == 0
     assert c == 3
-    assert name == "inclusion"
+    assert name == "row inclusion"
 
 
 def test_hint_inclusion_guardian_2021_01_16():
@@ -344,7 +344,7 @@ def test_hint_inclusion_guardian_2021_01_16():
     r, c, name = hint(grid)
     assert r == 3
     assert c == 3
-    assert name == "inclusion"
+    assert name == "row inclusion"
 
 
 def test_hint_inclusion_iterating_possibilities():
@@ -362,7 +362,7 @@ v
     r, c, name = hint(grid)
     assert r == 0
     assert c == 1
-    assert name == "inclusion"
+    assert name == "column inclusion"
     
     print(refutation_scores(grid))
 

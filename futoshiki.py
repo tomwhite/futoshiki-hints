@@ -114,39 +114,26 @@ class RowAndColumnExclusionRule:
         return vals
 
 
-class RowOrColumnInclusionRule:
-    """For a given row or column there exists only one cell which can contain a given value."""
+class RowInclusionRule:
+    """For a given row there exists only one cell which can contain a given value."""
 
     def __init__(self):
-        self.name = "inclusion"
+        self.name = "row inclusion"
 
-    def possible_cells(self, grid, val, r=None, c=None):
-        # TODO: check max of one of r or c is specified
+    def possible_cells(self, grid, val, r):
         cells = []
-        if r is not None:
-            for c in range(grid.n):
-                if grid.values[r, c] != 0:
-                    continue
-                if is_consistent(grid.set(r, c, val)):
-                    cells.append((r, c))
-        elif c is not None:
-            for r in range(grid.n):
-                if grid.values[r, c] != 0:
-                    continue
-                if is_consistent(grid.set(r, c, val)):
-                    cells.append((r, c))
+        for c in range(grid.n):
+            if grid.values[r, c] != 0:
+                continue
+            if is_consistent(grid.set(r, c, val)):
+                cells.append((r, c))
         return cells
 
-    def apply(self, grid, r=None, c=None):
-        # TODO: check max of one of r or c is specified
+    def apply(self, grid, r=None):
         if r is None:
             r_range = range(grid.n)
         else:
             r_range = range(r, r + 1)
-        if c is None:
-            c_range = range(grid.n)
-        else:
-            c_range = range(c, c + 1)
         for r in r_range:
             for val in range(1, grid.n + 1):
                 cells = self.possible_cells(grid, val, r=r)
@@ -154,6 +141,29 @@ class RowOrColumnInclusionRule:
                     r, c = cells[0]
                     # val has to go in r, c
                     return r, c, val
+        return None
+
+
+class ColumnInclusionRule:
+    """For a given column there exists only one cell which can contain a given value."""
+
+    def __init__(self):
+        self.name = "column inclusion"
+
+    def possible_cells(self, grid, val, c):
+        cells = []
+        for r in range(grid.n):
+            if grid.values[r, c] != 0:
+                continue
+            if is_consistent(grid.set(r, c, val)):
+                cells.append((r, c))
+        return cells
+
+    def apply(self, grid, c=None):
+        if c is None:
+            c_range = range(grid.n)
+        else:
+            c_range = range(c, c + 1)
         for c in c_range:
             for val in range(1, grid.n + 1):
                 cells = self.possible_cells(grid, val, c=c)
@@ -359,7 +369,7 @@ def refutation_scores(grid):
 
 def hint(grid):
     # try simple rules first
-    rules = (RowAndColumnExclusionRule(), RowOrColumnInclusionRule())
+    rules = (RowAndColumnExclusionRule(), RowInclusionRule(), ColumnInclusionRule())
     for rule in rules:
         res = rule.apply(grid)
         if res is not None:
