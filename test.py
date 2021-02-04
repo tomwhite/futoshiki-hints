@@ -51,57 +51,114 @@ v   ^
 
     assert str(Grid(rep)).strip() == rep.strip()
 
+
 def test_is_consistent():
-    assert is_consistent(Grid("""
+    assert (
+        is_consistent(
+            Grid(
+                """
 1   ·
      
 ·   ·
-""")) == True
+"""
+            )
+        )
+        == True
+    )
 
-    assert is_consistent(Grid("""
+    assert (
+        is_consistent(
+            Grid(
+                """
 ·   ·
      
 3   ·
-""")) == False
+"""
+            )
+        )
+        == False
+    )
 
-    assert is_consistent(Grid("""
+    assert (
+        is_consistent(
+            Grid(
+                """
 1   1
      
 ·   ·
-""")) == False
+"""
+            )
+        )
+        == False
+    )
 
-    assert is_consistent(Grid("""
+    assert (
+        is_consistent(
+            Grid(
+                """
 1   ·
      
 1   ·
-""")) == False
+"""
+            )
+        )
+        == False
+    )
 
-    assert is_consistent(Grid("""
+    assert (
+        is_consistent(
+            Grid(
+                """
 1 > 2
      
 ·   ·
-""")) == False
+"""
+            )
+        )
+        == False
+    )
 
-    assert is_consistent(Grid("""
+    assert (
+        is_consistent(
+            Grid(
+                """
 1   ·
 v    
 2   ·
-""")) == False
+"""
+            )
+        )
+        == False
+    )
 
     # note this is consistent, even though it doesn't give a solution
-    assert is_consistent(Grid("""
+    assert (
+        is_consistent(
+            Grid(
+                """
 3   ·   1
          
 ·   1   2
          
 ·   ·   ·
-""")) == True
+"""
+            )
+        )
+        == True
+    )
 
-    assert is_consistent(Grid("""
+    assert (
+        is_consistent(
+            Grid(
+                """
 1 > ·
      
 ·   ·
-""")) == False
+"""
+            )
+        )
+        == False
+    )
 
 
 def test_exclusion_rule():
@@ -120,7 +177,6 @@ def test_exclusion_rule():
     assert rule.apply(grid, 0, 1) == (0, 1, 4)
     assert rule.apply(grid, 2, 2) == (2, 2, 4)
     assert rule.apply(grid, 1, 3) == (1, 3, 1)
-
 
     rep = """
 ·   ·   ·   ·
@@ -203,9 +259,10 @@ def test_hint():
 ·   ·   ·   4
 """
     grid = Grid(rep)
-    r, c = hint(grid)
+    r, c, name = hint(grid)
     assert r == 1
     assert c == 0
+    assert name == "exclusion"
 
     rep = """
 ·   ·   ·   ·
@@ -217,9 +274,10 @@ def test_hint():
 ·   ·   ·   4
 """
     grid = Grid(rep)
-    r, c = hint(grid)
+    r, c, name = hint(grid)
     assert r == 3
     assert c == 0
+    assert name == "exclusion"
 
     rep = """
 ·   ·   ·   ·
@@ -231,9 +289,10 @@ def test_hint():
 3   ·   ·   4
 """
     grid = Grid(rep)
-    r, c = hint(grid)
+    r, c, name = hint(grid)
     assert r == 0
     assert c == 0
+    assert name == "exclusion"
 
     rep = """
 4   ·   ·   ·
@@ -245,9 +304,10 @@ def test_hint():
 3   ·   ·   4
 """
     grid = Grid(rep)
-    r, c = hint(grid)
+    r, c, name = hint(grid)
     assert r == 3
     assert c == 1
+    assert name == "exclusion"
 
 
 def test_hint_inclusion():
@@ -262,9 +322,10 @@ def test_hint_inclusion():
 · > ·   ·   ·
 """
     grid = Grid(rep)
-    r, c = hint(grid)
+    r, c, name = hint(grid)
     assert r == 0
     assert c == 3
+    assert name == "inclusion"
 
 
 def test_refutation_scores_guardian_2021_01_16():
@@ -296,6 +357,7 @@ v
 ·   ·   ·   ·
 """
     grid = Grid(rep)
+    print(hint(grid))
     print(solve(grid))
     print(refutation_scores(grid))
     # play(grid)

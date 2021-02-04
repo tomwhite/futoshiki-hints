@@ -84,6 +84,9 @@ class Grid:
 class RowAndColumnExclusionRule:
     """For a given cell there is only one value that can go into the cell."""
 
+    def __init__(self):
+        self.name = "exclusion"
+
     def apply(self, grid, r=None, c=None):
         if r is None:
             r_range = range(grid.n)
@@ -113,6 +116,9 @@ class RowAndColumnExclusionRule:
 
 class RowOrColumnInclusionRule:
     """For a given row or column there exists only one cell which can contain a given value."""
+
+    def __init__(self):
+        self.name = "inclusion"
 
     def possible_cells(self, grid, val, r=None, c=None):
         # TODO: check max of one of r or c is specified
@@ -358,13 +364,13 @@ def hint(grid):
         res = rule.apply(grid)
         if res is not None:
             r, c, _ = res
-            return r, c
+            return r, c, rule.name
 
     # then try refutation scores
     scores = refutation_scores(grid)
     masked_scores = np.ma.masked_equal(scores, 0, copy=False)
     r, c = np.unravel_index(masked_scores.argmin(), scores.shape)
-    return r, c
+    return r, c, "refutation"
 
 
 def play(grid, n_moves=5):
@@ -372,7 +378,7 @@ def play(grid, n_moves=5):
     print(grid)
     print()
     for i in range(1, n_moves + 1):
-        r, c = hint(grid)
+        r, c, name = hint(grid)
         v = solve(grid)[r, c]
         grid.values[r, c] = v
         print(f"Move {i}:")
