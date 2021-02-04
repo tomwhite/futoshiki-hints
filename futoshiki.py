@@ -95,22 +95,19 @@ class RowAndColumnExclusionRule:
             c_range = range(c, c + 1)
         for r in r_range:
             for c in c_range:
+                if grid.values[r, c] != 0:
+                    continue
                 vals = self.possible_values(grid, r, c)
                 if len(vals) == 1:
                     val = next(iter(vals))
-                    return val, r, c
+                    return r, c, val
         return None
 
     def possible_values(self, grid, r, c):
         vals = set(range(1, grid.n + 1))
-        for val in vals:
-            # if adding val to r, c does not produce an inconsistency, add val as possible
-            pass
-        for i, row in enumerate(grid.values):
-            for j, val in enumerate(row):
-                if (i == r) != (j == c):  # xor
-                    if val != 0:
-                        vals.discard(val)
+        for val in range(1, grid.n + 1):
+            if not is_consistent(grid.set(r, c, val)):
+                vals.discard(val)
         return vals
 
 
