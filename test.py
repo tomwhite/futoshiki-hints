@@ -328,7 +328,7 @@ def test_hint_inclusion():
     assert name == "inclusion"
 
 
-def test_refutation_scores_guardian_2021_01_16():
+def test_hint_inclusion_guardian_2021_01_16():
     rep = """
 · < ·   ·   · > ·
     ^       v    
@@ -341,9 +341,12 @@ def test_refutation_scores_guardian_2021_01_16():
 · < ·   · > · > ·
 """
     grid = Grid(rep)
-    scores = refutation_scores(grid)
-    # I think 0,0 is easiest, not 1,1 - but still helpful
-    print(scores)
+    print(solve(grid))
+    r, c, name = hint(grid)
+    print(r, c, name)
+    assert r == 3
+    assert c == 3
+    assert name == "inclusion"
 
 
 def test_play():
