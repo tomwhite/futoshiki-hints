@@ -135,12 +135,18 @@ class RowOrColumnInclusionRule:
         # TODO: check max of one of r or c is specified
         if r is not None:
             for val in range(1, grid.n + 1):
-                cells = self.possible_cells(grid, val, r)
+                cells = self.possible_cells(grid, val, r=r)
                 if len(cells) == 1:
                     r, c = cells[0]
                     # val has to go in r, c
                     return r, c, val
-        # TODO: column
+        elif c is not None:
+            for val in range(1, grid.n + 1):
+                cells = self.possible_cells(grid, val, c=c)
+                if len(cells) == 1:
+                    r, c = cells[0]
+                    # val has to go in r, c
+                    return r, c, val
         return None
 
 

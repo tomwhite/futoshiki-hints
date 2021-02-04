@@ -122,6 +122,20 @@ def test_exclusion_rule():
     assert rule.apply(grid, 1, 3) == (1, 3, 1)
 
 
+    rep = """
+·   ·   ·   ·
+             
+·   ·   ·   ·
+^            
+2   ·   ·   ·
+    ^        
+·   ·   ·   4
+"""
+    grid = Grid(rep)
+    rule = RowAndColumnExclusionRule()
+    assert rule.apply(grid, 1, 0) == (1, 0, 1)
+
+
 def test_inclusion_rule():
     # from https://www.futoshiki.org/how-to-solve
     rep = """
@@ -136,6 +150,19 @@ def test_inclusion_rule():
     grid = Grid(rep)
     rule = RowOrColumnInclusionRule()
     assert rule.apply(grid, r=0) == (0, 3, 1)
+
+    rep = """
+3   ·   ·   ·
+            v
+· > ·   ·   ·
+             
+·   3   · < ·
+v            
+·   ·   ·   ·
+"""
+    grid = Grid(rep)
+    rule = RowOrColumnInclusionRule()
+    assert rule.apply(grid, c=0) == (3, 0, 1)
 
 
 def test_solve():
