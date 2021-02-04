@@ -137,11 +137,11 @@ def test_exclusion_rule():
 
 
 def test_inclusion_rule():
-    # from https://www.futoshiki.org/how-to-solve
+    # based on https://www.futoshiki.org/how-to-solve
     rep = """
 3   ·   · > ·
     v        
-·   ·   3   ·
+·   ·   ·   ·
              
 ·   ·   ·   ·
         ^    
@@ -156,7 +156,7 @@ def test_inclusion_rule():
             v
 · > ·   ·   ·
              
-·   3   · < ·
+·   ·   · < ·
 v            
 ·   ·   ·   ·
 """
@@ -190,7 +190,7 @@ def test_solve():
     )
 
 
-def test_refutation_scores():
+def test_hint():
     # from https://krazydad.com/tablet/futoshiki/?kind=4x4&volumeNumber=1&bookNumber=1&puzzleNumber=3
 
     rep = """
@@ -218,7 +218,6 @@ def test_refutation_scores():
 """
     grid = Grid(rep)
     r, c = hint(grid)
-    print(refutation_scores(grid))
     assert r == 3
     assert c == 0
 
@@ -251,6 +250,23 @@ def test_refutation_scores():
     assert c == 1
 
 
+def test_hint_inclusion():
+    # from https://www.futoshiki.org/how-to-solve
+    rep = """
+3   ·   · > ·
+    v        
+·   ·   3   ·
+             
+·   ·   ·   ·
+        ^    
+· > ·   ·   ·
+"""
+    grid = Grid(rep)
+    r, c = hint(grid)
+    assert r == 0
+    assert c == 3
+
+
 def test_refutation_scores_guardian_2021_01_16():
     rep = """
 · < ·   ·   · > ·
@@ -267,6 +283,7 @@ def test_refutation_scores_guardian_2021_01_16():
     scores = refutation_scores(grid)
     # I think 0,0 is easiest, not 1,1 - but still helpful
     print(scores)
+
 
 def test_play():
     rep = """

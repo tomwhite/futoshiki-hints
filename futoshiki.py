@@ -133,14 +133,22 @@ class RowOrColumnInclusionRule:
 
     def apply(self, grid, r=None, c=None):
         # TODO: check max of one of r or c is specified
-        if r is not None:
+        if r is None:
+            r_range = range(grid.n)
+        else:
+            r_range = range(r, r + 1)
+        if c is None:
+            c_range = range(grid.n)
+        else:
+            c_range = range(c, c + 1)
+        for r in r_range:
             for val in range(1, grid.n + 1):
                 cells = self.possible_cells(grid, val, r=r)
                 if len(cells) == 1:
                     r, c = cells[0]
                     # val has to go in r, c
                     return r, c, val
-        elif c is not None:
+        for c in c_range:
             for val in range(1, grid.n + 1):
                 cells = self.possible_cells(grid, val, c=c)
                 if len(cells) == 1:
@@ -344,6 +352,15 @@ def refutation_scores(grid):
 
 
 def hint(grid):
+    # try simple rules first
+    rules = (RowAndColumnExclusionRule(), RowOrColumnInclusionRule())
+    for rule in rules:
+        res = rule.apply(grid)
+        if res is not None:
+            r, c, _ = res
+            return r, c
+
+    # then try refutation scores
     scores = refutation_scores(grid)
     masked_scores = np.ma.masked_equal(scores, 0, copy=False)
     r, c = np.unravel_index(masked_scores.argmin(), scores.shape)
