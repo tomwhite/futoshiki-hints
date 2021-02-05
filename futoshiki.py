@@ -103,8 +103,10 @@ class RowAndColumnExclusionRule:
                 vals = self.possible_values(grid, r, c)
                 if len(vals) == 1:
                     val = next(iter(vals))
-                    # What is the only value that can go in (r, c)?
-                    return r, c, val
+                    suggestion = (
+                        f"What is the only value that can go in ({r + 1}, {c + 1})?"
+                    )
+                    return r, c, val, suggestion
         return None
 
     def possible_values(self, grid, r, c):
@@ -140,9 +142,11 @@ class RowInclusionRule:
                 cells = self.possible_cells(grid, val, r=r)
                 if len(cells) == 1:
                     r, c = cells[0]
-                    # Which cell in row r does one number have to go?
-                    # Where in row r does the number val have to go?
-                    return r, c, val
+                    # Less of a hint: Which cell in row r does one number have to go?
+                    suggestion = (
+                        f"Where in row {r + 1} does the number {val} have to go?"
+                    )
+                    return r, c, val, suggestion
         return None
 
 
@@ -171,9 +175,11 @@ class ColumnInclusionRule:
                 cells = self.possible_cells(grid, val, c=c)
                 if len(cells) == 1:
                     r, c = cells[0]
-                    # Which cell in column c does one number have to go?
-                    # Where in column c does the number val have to go?
-                    return r, c, val
+                    # Less of a hint: Which cell in column c does one number have to go?
+                    suggestion = (
+                        f"Where in column {c + 1} does the number {val} have to go?"
+                    )
+                    return r, c, val, suggestion
         return None
 
 
@@ -188,8 +194,8 @@ class MinimumRefutationScoreRule:
         scores = refutation_scores(grid)
         masked_scores = np.ma.masked_equal(scores, 0, copy=False)
         r, c = np.unravel_index(masked_scores.argmin(), scores.shape)
-        # Can you show that all numbers except one for (r, c) are impossible?
-        return r, c, None  # TODO: fill in value
+        suggestion = f"Can you show that all numbers except one for ({r + 1}, {c + 1}) are impossible?"
+        return r, c, None, suggestion  # TODO: fill in value
 
 
 def is_consistent(grid):
@@ -393,11 +399,10 @@ def hint(grid):
         MinimumRefutationScoreRule(),
     )
     for rule in rules:
-        # TODO: return text suggestion
         res = rule.apply(grid)
         if res is not None:
-            r, c, _ = res
-            return r, c, rule.name
+            r, c, val, suggestion = res
+            return r, c, rule.name, suggestion
 
 
 def play(grid, n_moves=5):
@@ -405,9 +410,10 @@ def play(grid, n_moves=5):
     print(grid)
     print()
     for i in range(1, n_moves + 1):
-        r, c, name = hint(grid)
+        r, c, name, suggestion = hint(grid)
         v = solve(grid)[r, c]
         grid.values[r, c] = v
+        print(suggestion)
         print(f"Move {i}:")
         print(grid)
         print()

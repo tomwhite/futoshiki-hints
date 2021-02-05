@@ -174,9 +174,24 @@ def test_exclusion_rule():
     grid = Grid(rep)
     rule = RowAndColumnExclusionRule()
     assert rule.apply(grid, 1, 1) is None
-    assert rule.apply(grid, 0, 1) == (0, 1, 4)
-    assert rule.apply(grid, 2, 2) == (2, 2, 4)
-    assert rule.apply(grid, 1, 3) == (1, 3, 1)
+    assert rule.apply(grid, 0, 1) == (
+        0,
+        1,
+        4,
+        "What is the only value that can go in (1, 2)?",
+    )
+    assert rule.apply(grid, 2, 2) == (
+        2,
+        2,
+        4,
+        "What is the only value that can go in (3, 3)?",
+    )
+    assert rule.apply(grid, 1, 3) == (
+        1,
+        3,
+        1,
+        "What is the only value that can go in (2, 4)?",
+    )
 
     rep = """
 ·   ·   ·   ·
@@ -189,7 +204,8 @@ def test_exclusion_rule():
 """
     grid = Grid(rep)
     rule = RowAndColumnExclusionRule()
-    assert rule.apply(grid, 1, 0) == (1, 0, 1)
+    suggestion = "What is the only value that can go in (2, 1)?"
+    assert rule.apply(grid, 1, 0) == (1, 0, 1, suggestion)
 
 
 def test_inclusion_rule():
@@ -205,7 +221,8 @@ def test_inclusion_rule():
 """
     grid = Grid(rep)
     rule = RowInclusionRule()
-    assert rule.apply(grid, r=0) == (0, 3, 1)
+    suggestion = "Where in row 1 does the number 1 have to go?"
+    assert rule.apply(grid, r=0) == (0, 3, 1, suggestion)
 
     rep = """
 3   ·   ·   ·
@@ -218,7 +235,8 @@ v
 """
     grid = Grid(rep)
     rule = ColumnInclusionRule()
-    assert rule.apply(grid, c=0) == (3, 0, 1)
+    suggestion = "Where in column 1 does the number 1 have to go?"
+    assert rule.apply(grid, c=0) == (3, 0, 1, suggestion)
 
 
 def test_solve():
@@ -259,7 +277,7 @@ def test_hint():
 ·   ·   ·   4
 """
     grid = Grid(rep)
-    r, c, name = hint(grid)
+    r, c, name, suggestion = hint(grid)
     assert r == 1
     assert c == 0
     assert name == "exclusion"
@@ -274,7 +292,7 @@ def test_hint():
 ·   ·   ·   4
 """
     grid = Grid(rep)
-    r, c, name = hint(grid)
+    r, c, name, suggestion = hint(grid)
     assert r == 3
     assert c == 0
     assert name == "exclusion"
@@ -289,7 +307,7 @@ def test_hint():
 3   ·   ·   4
 """
     grid = Grid(rep)
-    r, c, name = hint(grid)
+    r, c, name, suggestion = hint(grid)
     assert r == 0
     assert c == 0
     assert name == "exclusion"
@@ -304,7 +322,7 @@ def test_hint():
 3   ·   ·   4
 """
     grid = Grid(rep)
-    r, c, name = hint(grid)
+    r, c, name, suggestion = hint(grid)
     assert r == 3
     assert c == 1
     assert name == "exclusion"
@@ -322,7 +340,7 @@ def test_hint_inclusion():
 · > ·   ·   ·
 """
     grid = Grid(rep)
-    r, c, name = hint(grid)
+    r, c, name, suggestion = hint(grid)
     assert r == 0
     assert c == 3
     assert name == "row inclusion"
@@ -341,7 +359,7 @@ def test_hint_inclusion_guardian_2021_01_16():
 · < ·   · > · > ·
 """
     grid = Grid(rep)
-    r, c, name = hint(grid)
+    r, c, name, suggestion = hint(grid)
     assert r == 3
     assert c == 3
     assert name == "row inclusion"
@@ -359,7 +377,7 @@ v
 4   ·   · < 3
 """
     grid = Grid(rep)
-    r, c, name = hint(grid)
+    r, c, name, suggestion = hint(grid)
     assert r == 0
     assert c == 1
     assert name == "column inclusion"
@@ -378,7 +396,4 @@ v
 ·   ·   ·   ·
 """
     grid = Grid(rep)
-    print(hint(grid))
-    print(solve(grid))
-    print(refutation_scores(grid))
-    # play(grid)
+    play(grid, n_moves=6)
