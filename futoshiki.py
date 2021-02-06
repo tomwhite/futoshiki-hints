@@ -223,6 +223,7 @@ def refutation_scores(grid):
     X, constraints = _get_variables_and_constraints(grid)
     s = Solver()
     s.set(unsat_core=True)
+    # TODO: why do scores differ if _get_variables_and_constraints is called here?
     s.add(constraints)
 
     n = grid.n
