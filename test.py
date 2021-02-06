@@ -239,6 +239,24 @@ v
     assert rule.apply(grid, c=0) == (3, 0, 1, suggestion)
 
 
+def test_refutation_score_guardian_2021_01_16():
+    rep = """
+· < ·   ·   · > ·
+    ^       v    
+·   · < ·   ·   ·
+    ^        
+· < ·   ·   ·   ·
+^               v
+·   · < ·   ·   ·
+^       ^        
+· < ·   · > · > ·
+"""
+    grid = Grid(rep)
+    rule = MinimumRefutationScoreRule()
+    suggestion = "Can you show that all numbers except one for (2, 2) are impossible?"
+    assert rule.apply(grid) == (1, 1, None, suggestion)
+
+
 def test_solve():
     rep = """
 ·   ·   ·   ·
@@ -381,8 +399,6 @@ v
     assert r == 0
     assert c == 1
     assert name == "column inclusion"
-
-    print(refutation_scores(grid))
 
 
 def test_play():

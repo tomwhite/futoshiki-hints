@@ -159,7 +159,7 @@ def is_consistent(grid):
     return s.check() == sat
 
 
-def solve(grid):
+def _get_variables_and_constraints(grid):
     n = grid.n
 
     # a variable for each cell
@@ -200,11 +200,16 @@ def solve(grid):
         if grid.values[i, j] != 0
     ]
 
-    # solve
+    return X, cells_c + rows_c + cols_c + ineq_c + instance_c
+
+
+def solve(grid):
     s = Solver()
-    s.add(cells_c + rows_c + cols_c + ineq_c + instance_c)
+    X, constraints = _get_variables_and_constraints(grid)
+    s.add(constraints)
     if s.check() == sat:
         m = s.model()
+        n = grid.n
         values = np.empty((n, n), dtype=int)
         for i in range(n):
             for j in range(n):
@@ -215,51 +220,12 @@ def solve(grid):
 
 
 def refutation_scores(grid):
-    n = grid.n
-
-    # a variable for each cell
-    X = [[Int("x_%s_%s" % (i + 1, j + 1)) for j in range(n)] for i in range(n)]
-
-    # each cell contains a value in {1, ..., n}
-    cells_c = [And(1 <= X[i][j], X[i][j] <= n) for i in range(n) for j in range(n)]
-
-    # each row contains distinct values
-    rows_c = [Distinct(X[i]) for i in range(n)]
-
-    # each column contains distinct values
-    cols_c = [Distinct([X[i][j] for i in range(n)]) for j in range(n)]
-
-    # add constraints for inequalities
-    ineq_c = []
-    for i, row in enumerate(grid.values):
-        for j, _ in enumerate(row):
-            if j < n - 1:
-                ineq = grid.across[i, j]
-                if ineq == -1:
-                    ineq_c.append(X[i][j] < X[i][j + 1])
-                elif ineq == 1:
-                    ineq_c.append(X[i][j] > X[i][j + 1])
-        if i < n - 1:
-            for j, _ in enumerate(row):
-                ineq = grid.down[i, j]
-                if ineq == -1:
-                    ineq_c.append(X[i][j] < X[i + 1][j])
-                elif ineq == 1:
-                    ineq_c.append(X[i][j] > X[i + 1][j])
-
-    # add constraints for any values provided
-    instance_c = [
-        X[i][j] == int(grid.values[i, j])
-        for i in range(n)
-        for j in range(n)
-        if grid.values[i, j] != 0
-    ]
-
-    # calculate scores
+    X, constraints = _get_variables_and_constraints(grid)
     s = Solver()
     s.set(unsat_core=True)
-    s.add(cells_c + rows_c + cols_c + ineq_c + instance_c)
+    s.add(constraints)
 
+    n = grid.n
     scores = np.zeros((n, n), dtype=int)
     for r in range(0, n):
         for c in range(0, n):
