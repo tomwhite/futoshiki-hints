@@ -252,7 +252,7 @@ def test_solve():
     grid = Grid(rep)
     solution = solve(grid)
     assert_array_equal(
-        solution,
+        solution.values,
         np.array(
             [
                 [4, 3, 2, 1],

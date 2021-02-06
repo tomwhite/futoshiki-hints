@@ -10,14 +10,14 @@ class Grid:
     def __init__(self, rep=None, values=None, across=None, down=None):
         if rep is not None:
             self.rep = rep
-            self.values, self.across, self.down = self.parse()
+            self.values, self.across, self.down = self._parse()
         else:
             self.values = values
             self.across = across
             self.down = down
         self.n = self.values.shape[0]
 
-    def parse(self):
+    def _parse(self):
         # encode characters as ints
         # note that inequalities have one subtracted later, hence space is 1 here
         table = str.maketrans("· <>^v", "010202")
@@ -36,7 +36,7 @@ class Grid:
         down = a[1::2, ::4] - 1
         return values, across, down
 
-    def format(self):
+    def _format(self):
         def format_value(x):
             return f"{x}" if x > 0 else "·"
 
@@ -73,129 +73,13 @@ class Grid:
         return rep
 
     def __str__(self):
-        return self.format()
+        return self._format()
 
     def set(self, r, c, val):
+        """Set a cell to a value and return the new grid."""
         values = self.values.copy()
         values[r, c] = val
         return Grid(values=values, across=self.across, down=self.down)
-
-
-class RowAndColumnExclusionRule:
-    """For a given cell there is only one value that can go into the cell."""
-
-    def __init__(self):
-        self.name = "exclusion"
-
-    def apply(self, grid, r=None, c=None):
-        if r is None:
-            r_range = range(grid.n)
-        else:
-            r_range = range(r, r + 1)
-        if c is None:
-            c_range = range(grid.n)
-        else:
-            c_range = range(c, c + 1)
-        for r in r_range:
-            for c in c_range:
-                if grid.values[r, c] != 0:
-                    continue
-                vals = self.possible_values(grid, r, c)
-                if len(vals) == 1:
-                    val = next(iter(vals))
-                    suggestion = (
-                        f"What is the only value that can go in ({r + 1}, {c + 1})?"
-                    )
-                    return r, c, val, suggestion
-        return None
-
-    def possible_values(self, grid, r, c):
-        vals = set(range(1, grid.n + 1))
-        for val in range(1, grid.n + 1):
-            if not is_consistent(grid.set(r, c, val)):
-                vals.discard(val)
-        return vals
-
-
-class RowInclusionRule:
-    """For a given row there exists only one cell which can contain a given value."""
-
-    def __init__(self):
-        self.name = "row inclusion"
-
-    def possible_cells(self, grid, val, r):
-        cells = []
-        for c in range(grid.n):
-            if grid.values[r, c] != 0:
-                continue
-            if is_consistent(grid.set(r, c, val)):
-                cells.append((r, c))
-        return cells
-
-    def apply(self, grid, r=None):
-        if r is None:
-            r_range = range(grid.n)
-        else:
-            r_range = range(r, r + 1)
-        for r in r_range:
-            for val in range(1, grid.n + 1):
-                cells = self.possible_cells(grid, val, r=r)
-                if len(cells) == 1:
-                    r, c = cells[0]
-                    # Less of a hint: Which cell in row r does one number have to go?
-                    suggestion = (
-                        f"Where in row {r + 1} does the number {val} have to go?"
-                    )
-                    return r, c, val, suggestion
-        return None
-
-
-class ColumnInclusionRule:
-    """For a given column there exists only one cell which can contain a given value."""
-
-    def __init__(self):
-        self.name = "column inclusion"
-
-    def possible_cells(self, grid, val, c):
-        cells = []
-        for r in range(grid.n):
-            if grid.values[r, c] != 0:
-                continue
-            if is_consistent(grid.set(r, c, val)):
-                cells.append((r, c))
-        return cells
-
-    def apply(self, grid, c=None):
-        if c is None:
-            c_range = range(grid.n)
-        else:
-            c_range = range(c, c + 1)
-        for c in c_range:
-            for val in range(1, grid.n + 1):
-                cells = self.possible_cells(grid, val, c=c)
-                if len(cells) == 1:
-                    r, c = cells[0]
-                    # Less of a hint: Which cell in column c does one number have to go?
-                    suggestion = (
-                        f"Where in column {c + 1} does the number {val} have to go?"
-                    )
-                    return r, c, val, suggestion
-        return None
-
-
-class MinimumRefutationScoreRule:
-    """Find a cell that requires the fewest number of simple steps to demonstrate
-    the inconsistency of each wrong candidate value."""
-
-    def __init__(self):
-        self.name = "refutation"
-
-    def apply(self, grid):
-        scores = refutation_scores(grid)
-        masked_scores = np.ma.masked_equal(scores, 0, copy=False)
-        r, c = np.unravel_index(masked_scores.argmin(), scores.shape)
-        suggestion = f"Can you show that all numbers except one for ({r + 1}, {c + 1}) are impossible?"
-        return r, c, None, suggestion  # TODO: fill in value
 
 
 def is_consistent(grid):
@@ -325,8 +209,7 @@ def solve(grid):
         for i in range(n):
             for j in range(n):
                 values[i, j] = m.evaluate(X[i][j]).as_long()
-        # TODO: return grid
-        return values
+        return Grid(values=values, across=grid.across, down=grid.down)
     else:
         return None
 
@@ -391,6 +274,123 @@ def refutation_scores(grid):
     return scores
 
 
+class RowAndColumnExclusionRule:
+    """For a given cell there is only one value that can go into the cell."""
+
+    def __init__(self):
+        self.name = "exclusion"
+
+    def apply(self, grid, r=None, c=None):
+        if r is None:
+            r_range = range(grid.n)
+        else:
+            r_range = range(r, r + 1)
+        if c is None:
+            c_range = range(grid.n)
+        else:
+            c_range = range(c, c + 1)
+        for r in r_range:
+            for c in c_range:
+                if grid.values[r, c] != 0:
+                    continue
+                vals = self.possible_values(grid, r, c)
+                if len(vals) == 1:
+                    val = next(iter(vals))
+                    suggestion = (
+                        f"What is the only value that can go in ({r + 1}, {c + 1})?"
+                    )
+                    return r, c, val, suggestion
+        return None
+
+    def possible_values(self, grid, r, c):
+        vals = set(range(1, grid.n + 1))
+        for val in range(1, grid.n + 1):
+            if not is_consistent(grid.set(r, c, val)):
+                vals.discard(val)
+        return vals
+
+
+class RowInclusionRule:
+    """For a given row there exists only one cell which can contain a given value."""
+
+    def __init__(self):
+        self.name = "row inclusion"
+
+    def possible_cells(self, grid, val, r):
+        cells = []
+        for c in range(grid.n):
+            if grid.values[r, c] != 0:
+                continue
+            if is_consistent(grid.set(r, c, val)):
+                cells.append((r, c))
+        return cells
+
+    def apply(self, grid, r=None):
+        if r is None:
+            r_range = range(grid.n)
+        else:
+            r_range = range(r, r + 1)
+        for r in r_range:
+            for val in range(1, grid.n + 1):
+                cells = self.possible_cells(grid, val, r=r)
+                if len(cells) == 1:
+                    r, c = cells[0]
+                    # Less of a hint: Which cell in row r does one number have to go?
+                    suggestion = (
+                        f"Where in row {r + 1} does the number {val} have to go?"
+                    )
+                    return r, c, val, suggestion
+        return None
+
+
+class ColumnInclusionRule:
+    """For a given column there exists only one cell which can contain a given value."""
+
+    def __init__(self):
+        self.name = "column inclusion"
+
+    def possible_cells(self, grid, val, c):
+        cells = []
+        for r in range(grid.n):
+            if grid.values[r, c] != 0:
+                continue
+            if is_consistent(grid.set(r, c, val)):
+                cells.append((r, c))
+        return cells
+
+    def apply(self, grid, c=None):
+        if c is None:
+            c_range = range(grid.n)
+        else:
+            c_range = range(c, c + 1)
+        for c in c_range:
+            for val in range(1, grid.n + 1):
+                cells = self.possible_cells(grid, val, c=c)
+                if len(cells) == 1:
+                    r, c = cells[0]
+                    # Less of a hint: Which cell in column c does one number have to go?
+                    suggestion = (
+                        f"Where in column {c + 1} does the number {val} have to go?"
+                    )
+                    return r, c, val, suggestion
+        return None
+
+
+class MinimumRefutationScoreRule:
+    """Find a cell that requires the fewest number of simple steps to demonstrate
+    the inconsistency of each wrong candidate value."""
+
+    def __init__(self):
+        self.name = "refutation"
+
+    def apply(self, grid):
+        scores = refutation_scores(grid)
+        masked_scores = np.ma.masked_equal(scores, 0, copy=False)
+        r, c = np.unravel_index(masked_scores.argmin(), scores.shape)
+        suggestion = f"Can you show that all numbers except one for ({r + 1}, {c + 1}) are impossible?"
+        return r, c, None, suggestion  # TODO: fill in value
+
+
 def hint(grid):
     rules = (
         RowAndColumnExclusionRule(),
@@ -411,8 +411,8 @@ def play(grid, n_moves=5):
     print()
     for i in range(1, n_moves + 1):
         r, c, name, suggestion = hint(grid)
-        v = solve(grid)[r, c]
-        grid.values[r, c] = v
+        val = solve(grid).values[r, c]
+        grid.values[r, c] = val
         print(suggestion)
         print(f"Move {i}:")
         print(grid)
