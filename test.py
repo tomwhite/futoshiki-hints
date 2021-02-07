@@ -413,3 +413,21 @@ v
 """
     grid = Grid(rep)
     play(grid, n_moves=6)
+
+
+def test_difficult():
+    # https://krazydad.com/futoshiki/sfiles/FUT_5x_v1_b100.pdf #16
+    rep = """
+·   ·   ·   ·   ·
+^                
+· < ·   ·   · > ·
+^               v
+·   · > ·   ·   ·
+v           v    
+·   ·   ·   · > ·
+                 
+·   ·   ·   ·   ·
+"""
+    grid = Grid(rep)
+    play(grid, n_moves=3)
+    # TODO: assert it does a refutation score
