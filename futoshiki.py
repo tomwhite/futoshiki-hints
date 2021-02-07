@@ -236,6 +236,7 @@ def refutation_scores(grid):
                 s.push()
                 s.add(X[r][c] == v)
                 if s.check() == unsat:
+                    # use proof length as proxy for score
                     scores[r, c] += len(s.proof().sexpr().splitlines())
                 s.pop()
     return scores

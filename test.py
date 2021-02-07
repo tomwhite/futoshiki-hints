@@ -415,37 +415,37 @@ v
     play(grid, n_moves=6)
 
 
-def test_difficult_13():
-    # https://krazydad.com/futoshiki/sfiles/FUT_5x_v1_b100.pdf #13
-    rep = """
-· > ·   · < ·   ·
-    v       ^    
-· < ·   ·   ·   ·
+# def test_difficult_13():
+#     # https://krazydad.com/futoshiki/sfiles/FUT_5x_v1_b100.pdf #13
+#     rep = """
+# · > ·   · < ·   ·
+#     v       ^    
+# · < ·   ·   ·   ·
                  
-·   ·   ·   ·   ·
+# ·   ·   ·   ·   ·
                  
-·   ·   3   ·   ·
-                ^
-·   · > ·   · > ·
-"""
-    grid = Grid(rep)
-    play(grid, n_moves=3)
-    # TODO: assert it does a refutation score
+# ·   ·   3   ·   ·
+#                 ^
+# ·   · > ·   · > ·
+# """
+#     grid = Grid(rep)
+#     play(grid, n_moves=3)
+#     # TODO: assert it does a refutation score
 
 
-def test_difficult_16():
-    # https://krazydad.com/futoshiki/sfiles/FUT_5x_v1_b100.pdf #16
-    rep = """
-·   ·   ·   ·   ·
-^                
-· < ·   ·   · > ·
-^               v
-·   · > ·   ·   ·
-v           v    
-·   ·   ·   · > ·
+# def test_difficult_16():
+#     # https://krazydad.com/futoshiki/sfiles/FUT_5x_v1_b100.pdf #16
+#     rep = """
+# ·   ·   ·   ·   ·
+# ^                
+# · < ·   ·   · > ·
+# ^               v
+# ·   · > ·   ·   ·
+# v           v    
+# ·   ·   ·   · > ·
                  
-·   ·   ·   ·   ·
-"""
-    grid = Grid(rep)
-    play(grid, n_moves=3)
-    # TODO: assert it does a refutation score
+# ·   ·   ·   ·   ·
+# """
+#     grid = Grid(rep)
+#     play(grid, n_moves=3)
+#     # TODO: assert it does a refutation score
