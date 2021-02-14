@@ -419,11 +419,11 @@ v
 #     # https://krazydad.com/futoshiki/sfiles/FUT_5x_v1_b100.pdf #13
 #     rep = """
 # · > ·   · < ·   ·
-#     v       ^    
+#     v       ^
 # · < ·   ·   ·   ·
-                 
+
 # ·   ·   ·   ·   ·
-                 
+
 # ·   ·   3   ·   ·
 #                 ^
 # ·   · > ·   · > ·
@@ -437,13 +437,13 @@ v
 #     # https://krazydad.com/futoshiki/sfiles/FUT_5x_v1_b100.pdf #16
 #     rep = """
 # ·   ·   ·   ·   ·
-# ^                
+# ^
 # · < ·   ·   · > ·
 # ^               v
 # ·   · > ·   ·   ·
-# v           v    
+# v           v
 # ·   ·   ·   · > ·
-                 
+
 # ·   ·   ·   ·   ·
 # """
 #     grid = Grid(rep)

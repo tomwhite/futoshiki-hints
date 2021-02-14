@@ -13,6 +13,19 @@ v   ^
 ·   ·   ·   · < ·
 """
 
+# Guardian 2020-02-13
+rep = """
+·   · > · > ·   ·
+            ^    
+·   ·   ·   · < ·
+^                
+·   · > ·   ·   ·
+        v   ^    
+·   ·   · < · > ·
+    v   v   ^    
+· > ·   ·   ·   ·
+"""
+
 if __name__ == "__main__":
     grid = Grid(rep)
     print("Start:")
@@ -21,11 +34,13 @@ if __name__ == "__main__":
 
     i = 1
     while True:
+        if grid.filled():
+            break
         print("Press enter for hint...")
         input()
         print("Finding hint...")
         r, c, name, suggestion = hint(grid)
-        v = solve(grid)[r, c]
+        v = solve(grid).values[r, c]
         grid.values[r, c] = v
         print(suggestion)
         print(f"Move {i}:")

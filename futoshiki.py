@@ -81,6 +81,9 @@ class Grid:
         values[r, c] = val
         return Grid(values=values, across=self.across, down=self.down)
 
+    def filled(self):
+        return np.all(self.values != 0)
+
 
 def is_consistent(grid):
     n = grid.n
