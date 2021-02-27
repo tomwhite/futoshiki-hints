@@ -1,3 +1,4 @@
+blessed
 numpy
 pytest
 z3-solver

@@ -13,6 +13,10 @@ blank = """
 """
 
 
+def test_empty():
+    assert str(Grid.empty(4)).strip() == blank.strip()
+
+
 def test_grid():
     rep = """
 · < ·   ·   ·

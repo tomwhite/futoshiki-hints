@@ -17,6 +17,14 @@ class Grid:
             self.down = down
         self.n = self.values.shape[0]
 
+    @classmethod
+    def empty(cls, n):
+        return cls(
+            values=np.zeros((n, n), dtype=int),
+            across=np.zeros((n, n - 1), dtype=int),
+            down=np.zeros((n - 1, n), dtype=int),
+        )
+
     def _parse(self):
         # encode characters as ints
         # note that inequalities have one subtracted later, hence space is 1 here
@@ -80,6 +88,16 @@ class Grid:
         values = self.values.copy()
         values[r, c] = val
         return Grid(values=values, across=self.across, down=self.down)
+
+    def set_across(self, r, c, val):
+        across = self.across.copy()
+        across[r, c] = val
+        return Grid(values=self.values, across=across, down=self.down)
+
+    def set_down(self, r, c, val):
+        down = self.down.copy()
+        down[r, c] = val
+        return Grid(values=self.values, across=self.across, down=down)
 
     def filled(self):
         return np.all(self.values != 0)
@@ -268,7 +286,7 @@ class RowAndColumnExclusionRule:
                 if len(vals) == 1:
                     val = next(iter(vals))
                     suggestion = (
-                        f"What is the only value that can go in ({r + 1}, {c + 1})?"
+                        f"What is the only value that can go in row {r + 1}, column {c + 1}?"
                     )
                     return r, c, val, suggestion
         return None
@@ -358,7 +376,7 @@ class MinimumRefutationScoreRule:
         scores = refutation_scores(grid)
         masked_scores = np.ma.masked_equal(scores, 0, copy=False)
         r, c = np.unravel_index(masked_scores.argmin(), scores.shape)
-        suggestion = f"Can you show that all numbers except one for ({r + 1}, {c + 1}) are impossible?"
+        suggestion = f"Can you show that all but one number for row {r + 1}, column {c + 1} are impossible?"
         return r, c, None, suggestion  # TODO: fill in value
 
 
