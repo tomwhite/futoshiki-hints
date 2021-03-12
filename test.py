@@ -182,19 +182,19 @@ def test_exclusion_rule():
         0,
         1,
         4,
-        "What is the only value that can go in (1, 2)?",
+        "What is the only value that can go in row 1, column 2?",
     )
     assert rule.apply(grid, 2, 2) == (
         2,
         2,
         4,
-        "What is the only value that can go in (3, 3)?",
+        "What is the only value that can go in row 3, column 3?",
     )
     assert rule.apply(grid, 1, 3) == (
         1,
         3,
         1,
-        "What is the only value that can go in (2, 4)?",
+        "What is the only value that can go in row 2, column 4?",
     )
 
     rep = """
@@ -208,7 +208,7 @@ def test_exclusion_rule():
 """
     grid = Grid(rep)
     rule = RowAndColumnExclusionRule()
-    suggestion = "What is the only value that can go in (2, 1)?"
+    suggestion = "What is the only value that can go in row 2, column 1?"
     assert rule.apply(grid, 1, 0) == (1, 0, 1, suggestion)
 
 
@@ -257,7 +257,9 @@ def test_refutation_score_guardian_2021_01_16():
 """
     grid = Grid(rep)
     rule = MinimumRefutationScoreRule()
-    suggestion = "Can you show that all numbers except one for (2, 2) are impossible?"
+    suggestion = (
+        "Can you show that all but one number for row 2, column 2 are impossible?"
+    )
     assert rule.apply(grid) == (1, 1, None, suggestion)
 
 
@@ -403,53 +405,3 @@ v
     assert r == 0
     assert c == 1
     assert name == "column inclusion"
-
-
-def test_play():
-    rep = """
-·   1   ·   ·
-^           ^
-·   ·   ·   ·
-v            
-·   ·   ·   ·
-            ^
-·   ·   ·   ·
-"""
-    grid = Grid(rep)
-    play(grid, n_moves=6)
-
-
-# def test_difficult_13():
-#     # https://krazydad.com/futoshiki/sfiles/FUT_5x_v1_b100.pdf #13
-#     rep = """
-# · > ·   · < ·   ·
-#     v       ^
-# · < ·   ·   ·   ·
-
-# ·   ·   ·   ·   ·
-
-# ·   ·   3   ·   ·
-#                 ^
-# ·   · > ·   · > ·
-# """
-#     grid = Grid(rep)
-#     play(grid, n_moves=3)
-#     # TODO: assert it does a refutation score
-
-
-# def test_difficult_16():
-#     # https://krazydad.com/futoshiki/sfiles/FUT_5x_v1_b100.pdf #16
-#     rep = """
-# ·   ·   ·   ·   ·
-# ^
-# · < ·   ·   · > ·
-# ^               v
-# ·   · > ·   ·   ·
-# v           v
-# ·   ·   ·   · > ·
-
-# ·   ·   ·   ·   ·
-# """
-#     grid = Grid(rep)
-#     play(grid, n_moves=3)
-#     # TODO: assert it does a refutation score

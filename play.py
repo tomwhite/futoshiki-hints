@@ -1,9 +1,11 @@
+import sys
 from blessed import Terminal
 from futoshiki import *
 
 
 class Game:
     """Play an interactive game of Futoshiki"""
+
     def __init__(self, term, grid):
         self.term = term
         self.grid = grid
@@ -114,7 +116,8 @@ class Game:
 
 
 if __name__ == "__main__":
+    n = int(sys.argv[1]) if len(sys.argv) > 1 else 5
     term = Terminal()
-    grid = Grid.empty(5)
+    grid = Grid.empty(n)
     game = Game(term, grid)
     game.play()

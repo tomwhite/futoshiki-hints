@@ -285,9 +285,7 @@ class RowAndColumnExclusionRule:
                 vals = self.possible_values(grid, r, c)
                 if len(vals) == 1:
                     val = next(iter(vals))
-                    suggestion = (
-                        f"What is the only value that can go in row {r + 1}, column {c + 1}?"
-                    )
+                    suggestion = f"What is the only value that can go in row {r + 1}, column {c + 1}?"
                     return r, c, val, suggestion
         return None
 

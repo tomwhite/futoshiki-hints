@@ -1,6 +1,6 @@
-# Futoshiki
+# Futoshiki Hints
 
-It's easy to solve a Futoshiki puzzle using a computer, but it's not very
+It's easy to solve a [Futoshiki](https://en.wikipedia.org/wiki/Futoshiki) puzzle using a computer, but it's not very
 illuminating as the solution doesn't tell you the steps or reasoning to get to
 it.
 
@@ -21,7 +21,7 @@ For example, given the following 4-by-4 grid
 ·   ·   ·   4
 ```
 
-the program will ask _"What is the only value that can go in (2, 1)?"_
+the program will ask _"What is the only value that can go in row 2, column 1?"_
 
 The answer is 1, since it is the only value in the range 1-4 that is less than 2.
 
@@ -44,14 +44,16 @@ The number 1 has to go at the end of the row, since it can't be greater than ano
 ## Refutation score
 
 The process of generating suggestions rests on an idea from the paper
-_Difficulty Rating of Sudoku Puzzles: An Overview and Evaluation_ by Radek Pelanek.
+[_Difficulty Rating of Sudoku Puzzles: An Overview and Evaluation_](https://arxiv.org/abs/1403.7373)
+by Radek Pelanek.
 
 > Let us suppose that we have a state in which the specified simple techniques do not yield any progress. For each unassigned variable (empty cell) we compute a “refutation score”, this score expresses the difficulty of assigning the correct value to this variable in the given state by refuting all other possible candidates.
 
 Using this idea we compute the refutation score for every unfilled square in the grid,
 then suggest the square with the lowest score as the one for the user to look at.
 
-To compute the refutation score I used the Z3 theorem prover. It has the ability to produce a
+To compute the refutation score I used the [Z3 theorem prover](https://github.com/Z3Prover/z3).
+It has the ability to produce a
 symbolic [proof](https://theory.stanford.edu/~nikolaj/programmingz3.html#sec-proofs) of "usatisfiability" - in other words, a proof of why a candidate value does not have a solution.
 
 To illustrate this, consider this difficult puzzle ([Krazydad Volume 1, Book 100, #16](https://krazydad.com/futoshiki/index.php?sv=DL&pf=sfiles/FUT_5x_v1_b100.pdf&title=5x5%20Futoshiki%20Puzzles,%20Volume%201,%20Book%20100)):
@@ -98,6 +100,7 @@ From the above paper there are two simple rules:
 
 > __Naked single technique__ (also called singleton, single value, forced value, exclusion principle):
     For a given cell there is only one value that can go into the cell, because all other values occur in row, column or sub-grid of the cell (any other number would lead to a direct violation of rules).
+
 > __Hidden single technique__ (also called naked value, inclusion principle):
     For a given unit (row, column or sub-grid) there exists only one cell which can contain a given value (all other placements would lead to a direct violation of rules).
 
@@ -110,3 +113,35 @@ These are for Sudoku, but they apply to Futoshiki too. In the implementation her
 (Conceptually `RowInclusionRule` and `ColumnInclusionRule` are instances of the same rule, they are just broken into two for ease of implementation.)
 
 All the rules are implemented using Z3, since it makes specifying the constraints very straightforward.
+
+## How to use
+
+You can run Futoshiki Hints as a command-line program.
+
+You will need Python 3 on your computer.
+
+Create a virtual env, and install the required packages:
+
+```bash
+python3 -m venv venv; . venv/bin/activate
+pip install -r requirements.txt
+```
+
+To run the program type
+
+```bash
+python play.py
+```
+
+A blank 5x5 grid will appear. Set up a puzzle by adding numbers and inequality signs
+in the desired locations. You can fill in numbers as you solve the puzzle, or
+if you get stuck you can type `h` to get a hint. Typing `H` will give the hint
+and fill in the answer on the grid for you.
+
+Press `q` to quit.
+
+To play on a different size grid, supply the size when starting the program. For example:
+
+```bash
+python play.py 4
+```
